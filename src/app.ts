@@ -4,14 +4,16 @@ import webhookRoutes from "./routes/webhook.routes";
 
 
 export const createApp = () => {
-  
-const app = express();
+  const app = express();
 
-app.use(cors());
-app.use(express.json());
+  app.use(cors());
+  app.use(express.json());
 
-app.use("/", webhookRoutes);
+  app.get("/", (_req, res) => {
+    res.status(200).send("WhatsApp webhook is running");
+  });
 
+  app.use("/", webhookRoutes);
 
   return app;
 };

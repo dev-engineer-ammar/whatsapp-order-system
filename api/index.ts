@@ -1,28 +1,28 @@
-import dotenv from "dotenv";
-dotenv.config();
-
 import serverless from "serverless-http";
 import app from "../src/app";
 import { connectDB } from "../src/config/database";
 
-// cache DB connection
+// Cache the DB connection across warm invocations
 let isConnected = false;
+let connectionPromise: Promise<void> | null = null;
 
-const ensureConnection = async () => {
+async function ensureDbConnection() {
   if (!isConnected) {
-    await connectDB();
-    isConnected = true;
+    if (!connectionPromise) {
+      connectionPromise = connectDB().then(() => {
+        isConnected = true;
+        console.log("MongoDB connected (cached)");
+      });
+    }
+    await connectionPromise;
   }
-};
+}
 
-// middleware
-app.use(async (req, res, next) => {
-  await ensureConnection();
-  next();
-});
+// Pre-warm the connection (fire-and-forget, will be ready by first request)
+ensureDbConnection();
 
-// IMPORTANT: wrap express app
-export const handler = serverless(app);
+// Wrap Express app for serverless
+const handler = serverless(app);
 
-// default export for Vercel
+export { handler };
 export default handler;

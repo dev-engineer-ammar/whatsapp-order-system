@@ -1,13 +1,21 @@
 import axios, { AxiosInstance } from "axios";
 
 class WhatsAppService {
-  private client: AxiosInstance;
+  private getClient(): AxiosInstance {
+    const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+    const token = process.env.WHATSAPP_TOKEN;
+    const apiVersion = process.env.WHATSAPP_API_VERSION || "v23.0";
 
-  constructor() {
-    this.client = axios.create({
-      baseURL: `https://graph.facebook.com/${process.env.WHATSAPP_API_VERSION || "v23.0"}/${process.env.WHATSAPP_PHONE_NUMBER_ID}`,
+    if (!phoneNumberId || !token) {
+      throw new Error(
+        "WHATSAPP_PHONE_NUMBER_ID and WHATSAPP_TOKEN must be set"
+      );
+    }
+
+    return axios.create({
+      baseURL: `https://graph.facebook.com/${apiVersion}/${phoneNumberId}`,
       headers: {
-        Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });
@@ -21,7 +29,7 @@ class WhatsAppService {
     message: string
   ) {
     try {
-      const { data } = await this.client.post("/messages", {
+      const { data } = await this.getClient().post("/messages", {
         messaging_product: "whatsapp",
         to,
         type: "text",
@@ -47,7 +55,7 @@ class WhatsAppService {
    */
   async markAsRead(messageId: string) {
     try {
-      await this.client.post("/messages", {
+      await this.getClient().post("/messages", {
         messaging_product: "whatsapp",
         status: "read",
         message_id: messageId,

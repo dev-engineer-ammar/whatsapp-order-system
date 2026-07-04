@@ -14,7 +14,7 @@ class WebhookController {
 
     if (
       mode === "subscribe" &&
-      token === process.env.VERIFY_TOKEN
+      token === process.env.WHATSAPP_VERIFY_TOKEN
     ) {
       console.log("Webhook verified.");
 

@@ -5,9 +5,9 @@ class WhatsAppService {
 
   constructor() {
     this.client = axios.create({
-      baseURL: `https://graph.facebook.com/v23.0/${process.env.PHONE_NUMBER_ID}`,
+      baseURL: `https://graph.facebook.com/${process.env.WHATSAPP_API_VERSION || "v23.0"}/${process.env.WHATSAPP_PHONE_NUMBER_ID}`,
       headers: {
-        Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
+        Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
         "Content-Type": "application/json",
       },
     });

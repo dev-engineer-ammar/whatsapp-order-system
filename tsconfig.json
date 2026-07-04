@@ -1,13 +1,20 @@
+
+
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "Node16",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "dist",
     "rootDir": ".",
-    "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
-    "moduleResolution": "node16",
-    "skipLibCheck": true
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true
   },
-  "include": ["src/**/*", "api/**/*"]
+  "include": [
+    "src/**/*.ts",
+    "api/**/*.ts"
+  ]
 }

@@ -1,28 +1,18 @@
-import serverless from "serverless-http";
-import app from "../src/app";
-import { connectDB } from "../src/config/database";
+import { createApp } from "../src/app.js";
+import { connectDB } from "../src/config/database.js";
 
-// Cache the DB connection across warm invocations
-let isConnected = false;
-let connectionPromise: Promise<void> | null = null;
+let app: ReturnType<typeof createApp>;
 
-async function ensureDbConnection() {
-  if (!isConnected) {
-    if (!connectionPromise) {
-      connectionPromise = connectDB().then(() => {
-        isConnected = true;
-        console.log("MongoDB connected (cached)");
-      });
-    }
-    await connectionPromise;
+async function initialize() {
+  if (!app) {
+    await connectDB();
+    app = createApp();
   }
+
+  return app;
 }
 
-// Pre-warm the connection (fire-and-forget, will be ready by first request)
-ensureDbConnection();
-
-// Wrap Express app for serverless
-const handler = serverless(app);
-
-export { handler };
-export default handler;
+export default async function handler(req: any, res: any) {
+  const app = await initialize();
+  return app(req, res);
+}
